@@ -24,16 +24,16 @@ public class Main {
                 , Status.NEW, epic2.getId());
         manager.createSubtask(subtask3);
 
-        System.out.println("=== Задачи ===");
+        System.out.println("Задачи");
         manager.printAllTasks();
 
-        System.out.println("=== Эпики ===");
+        System.out.println("Эпики");
         manager.printAllEpics();
 
-        System.out.println("=== Подзадачи ===");
+        System.out.println("Подзадачи");
         manager.printAllSubtasks();
 
-        System.out.println("\n=== Обновляем статусы ===");
+        System.out.println("\nОбновляем статусы");
         manager.updateTaskStatus(task1.getId(), Status.DONE);
         manager.updateSubtaskStatus(subtask1.getId(), Status.DONE);
         manager.updateSubtaskStatus(subtask2.getId(), Status.IN_PROGRESS);
@@ -47,7 +47,7 @@ public class Main {
         System.out.println("Эпик 1 (статус рассчитывается): " + manager.getTaskById(epic1.getId()));
         System.out.println("Эпик 2 (статус рассчитывается): " + manager.getTaskById(epic2.getId()));
 
-        System.out.println("\n=== Удаляем задачу и эпик ===");
+        System.out.println("\nУдаляем задачу и эпик");
         manager.deleteTask(task2);
         manager.deleteEpic(epic1);
 
