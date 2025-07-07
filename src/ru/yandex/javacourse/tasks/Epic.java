@@ -1,6 +1,8 @@
+package ru.yandex.javacourse.tasks;
+
 import java.util.ArrayList;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
     private ArrayList<Integer> subtaskIds = new ArrayList<>();
 

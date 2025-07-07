@@ -1,3 +1,5 @@
+package ru.yandex.javacourse.tasks;
+
 public class Task {
     private int id;  // <- Добавляем id
     private String title;
@@ -45,7 +47,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "ru.yandex.javacourse.tasks.Task{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +

@@ -1,3 +1,12 @@
+import ru.yandex.javacourse.manager.TaskManager;
+import ru.yandex.javacourse.tasks.Epic;
+import ru.yandex.javacourse.tasks.Status;
+import ru.yandex.javacourse.tasks.Subtask;
+import ru.yandex.javacourse.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
         TaskManager manager = new TaskManager();
@@ -25,13 +34,19 @@ public class Main {
         manager.createSubtask(subtask3);
 
         System.out.println("Задачи");
-        manager.printAllTasks();
+        for (Task task : manager.getAllTasks()){
+            System.out.println(task);
+        }
 
         System.out.println("Эпики");
-        manager.printAllEpics();
+        for (Epic epic : manager.getAllEpics()){
+            System.out.println(epic);
+        }
 
         System.out.println("Подзадачи");
-        manager.printAllSubtasks();
+        for (Subtask subtask : manager.getAllSubtasks()){
+            System.out.println(subtask);
+        }
 
         System.out.println("\nОбновляем статусы");
         manager.updateTaskStatus(task1.getId(), Status.DONE);
@@ -52,12 +67,18 @@ public class Main {
         manager.deleteEpic(epic1);
 
         System.out.println("Задачи после удаления:");
-        manager.printAllTasks();
+        for (Task task : manager.getAllTasks()){
+            System.out.println(task);
+        }
 
         System.out.println("Эпики после удаления:");
-        manager.printAllEpics();
+        for (Epic epic : manager.getAllEpics()){
+            System.out.println(epic);
+        }
 
         System.out.println("Подзадачи после удаления:");
-        manager.printAllSubtasks();
+        for (Subtask subtask : manager.getAllSubtasks()){
+            System.out.println(subtask);
+        }
     }
 }

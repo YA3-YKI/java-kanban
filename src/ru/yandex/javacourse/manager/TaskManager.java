@@ -1,10 +1,19 @@
+package ru.yandex.javacourse.manager;
+
+import ru.yandex.javacourse.tasks.Epic;
+import ru.yandex.javacourse.tasks.Status;
+import ru.yandex.javacourse.tasks.Subtask;
+import ru.yandex.javacourse.tasks.Task;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class TaskManager {
     public static int id = 0;
-    public HashMap<Integer,Task> tasks;
-    public HashMap<Integer,Subtask> subtasks;
-    public HashMap<Integer,Epic> epics;
+    public HashMap<Integer, Task> tasks;
+    public HashMap<Integer, Subtask> subtasks;
+    public HashMap<Integer, Epic> epics;
 
     public TaskManager() {
         this.tasks = new HashMap<>();
@@ -29,34 +38,38 @@ public class TaskManager {
         }
     }
 
-    public void printAllTasks() {
-        for (Task task : tasks.values()) {
-            System.out.println(task);
-        }
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    public void printAllEpics() {
-        for (Epic epic : epics.values()) {
-            System.out.println("Epic: " + epic);
+    public List<Epic> getAllEpics() {
+        return new ArrayList<>(epics.values());
+    }
 
-            for (Integer subtaskId : epic.getSubtaskIds()) {
-                Subtask subtask = subtasks.get(subtaskId);
-                if (subtask != null) {
-                    System.out.println("  Subtask: " + subtask);
-                }
+    public List<Subtask> getAllSubtasks(){
+        return new ArrayList<>(subtasks.values());
+    }
+
+    public void deleteAllTasks(){
+        tasks.clear();
+    }
+
+    public void deleteAllSubtasks(){
+        for (Epic epic : epics.values()){
+            epic.getSubtaskIds().clear();
+            updateEpicStatus(epic.getId());
+        }
+
+        subtasks.clear();
+    }
+
+    public void deleteAllEpics(){
+        for (Epic epic : epics.values()){
+            for (Integer subtaskId : epic.getSubtaskIds()){
+                subtasks.remove(subtaskId);
             }
         }
-    }
 
-    public void printAllSubtasks(){
-        for (Subtask subtask : subtasks.values()) {
-            System.out.println(subtask);
-        }
-    }
-
-    public void deleteAll(){
-        tasks.clear();
-        subtasks.clear();
         epics.clear();
     }
 
@@ -87,7 +100,7 @@ public class TaskManager {
         if (epic != null){
             epic.getSubtaskIds().add(newId);
         } else {
-            System.out.println("Ошибка: Epic с таким ID "+ newSubtask.getEpicId() + " не найден");
+            System.out.println("Ошибка: ru.yandex.javacourse.tasks.Epic с таким ID "+ newSubtask.getEpicId() + " не найден");
         }
     }
 
