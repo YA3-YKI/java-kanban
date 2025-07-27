@@ -101,27 +101,34 @@ public class InMemoryTaskManagerTest {
         Task task = new Task(2, "Задача 1", "Описание задачи 1", Status.NEW);
         manager.addTask(task);
 
+        Task foundEpic = manager.getTaskById(epic.getId());
+        Task foundSubtask = manager.getTaskById(subtask.getId());
+        Task foundTask = manager.getTaskById(task.getId());
+
 
         assertAll(
-                () -> assertEquals("Эпик 1", manager.getTaskById(0).getTitle(),
-                        "Полe title не соответствует полю экземпляра полученному по ID"),
-                () -> assertEquals("Подзадача 1", manager.getTaskById(1).getTitle(),
-                        "Полe title не соответствует полю экземпляра полученному по ID"),
-                () -> assertEquals("Задача 1", manager.getTaskById(2).getTitle(),
-                        "Полe title не соответствует полю экземпляра полученному по ID")
+                () -> assertEquals(epic, foundEpic),
+                () -> assertEquals(subtask, foundSubtask),
+                () -> assertEquals(task, foundTask),
+
+                () -> assertEquals("Эпик 1", foundEpic.getTitle()),
+                () -> assertEquals("Описание эпика 1", foundEpic.getDescription()),
+                () -> assertEquals(Status.NEW, foundEpic.getStatus()),
+
+                () -> assertEquals(epic.getId(), ((Subtask) foundSubtask).getEpicId())
         );
 
     }
 
     @Test
-    public void checkConflictId() {
+    public void checkAutoChangeId() {
         TaskManager manager = new InMemoryTaskManager();
         Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
         Task task2 = new Task(0, "Задача 2", "Описание задачи 2", Status.NEW);
         manager.addTask(task1);
-        manager.createTask(task2);
+        manager.addTask(task2);
 
-        assertNotEquals(manager.getTaskById(0), manager.getTaskById(task2.getId()), "Конфликтуют ID");
+        assertEquals("Задача 2", manager.getTaskById(1).getTitle());
     }
 
     @Test
@@ -131,13 +138,13 @@ public class InMemoryTaskManagerTest {
         manager.addTask(task1);
 
         assertAll(
-                () -> assertEquals(0, manager.getTaskById(0).getId(),
+                () -> assertEquals(task1.getId(), manager.getTaskById(task1.getId()).getId(),
                         "Поля ID отличаются"),
-                () -> assertEquals("Задача 1", manager.getTaskById(0).getTitle(),
+                () -> assertEquals("Задача 1", manager.getTaskById(task1.getId()).getTitle(),
                         "Поля Title отличаются"),
-                () -> assertEquals("Описание задачи 1", manager.getTaskById(0).getDescription(),
+                () -> assertEquals("Описание задачи 1", manager.getTaskById(task1.getId()).getDescription(),
                         "Поля Description отличаются"),
-                () -> assertEquals(Status.NEW,manager.getTaskById(0).getStatus(),
+                () -> assertEquals(Status.NEW,manager.getTaskById(task1.getId()).getStatus(),
                         "Поля Status отличаются")
         );
     }
