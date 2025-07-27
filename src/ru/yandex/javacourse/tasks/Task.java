@@ -1,7 +1,9 @@
 package ru.yandex.javacourse.tasks;
 
+import java.util.Objects;
+
 public class Task {
-    private int id;  // <- Добавляем id
+    private int id;
     private String title;
     private String description;
     private Status status;
@@ -47,7 +49,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "ru.yandex.javacourse.tasks.Task{" +
+        return "\n" + "ru.yandex.javacourse.tasks.Task{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
@@ -58,13 +60,14 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Task)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id;
     }
 
+    // Не забудьте hashCode!
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return Objects.hash(id);
     }
 }

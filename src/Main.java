@@ -1,20 +1,30 @@
+import ru.yandex.javacourse.manager.InMemoryTaskManager;
 import ru.yandex.javacourse.manager.TaskManager;
 import ru.yandex.javacourse.tasks.Epic;
 import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        TaskManager manager = new InMemoryTaskManager();
 
         Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
         Task task2 = new Task(0, "Задача 2", "Описание задачи 2", Status.NEW);
         manager.addTask(task1);
         manager.addTask(task2);
+
+        System.out.println(manager.getHistory());
+
+        manager.addTask(task1);
+        manager.addTask(task2);
+        manager.addTask(task2);
+
+        System.out.println(manager.getHistory());
+
 
         Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
         manager.addTask(epic1);
@@ -61,6 +71,10 @@ public class Main {
 
         System.out.println("Эпик 1 (статус рассчитывается): " + manager.getTaskById(epic1.getId()));
         System.out.println("Эпик 2 (статус рассчитывается): " + manager.getTaskById(epic2.getId()));
+
+
+        System.out.println(manager.getHistory());
+
 
         System.out.println("\nУдаляем задачу и эпик");
         manager.deleteTask(task2);
