@@ -1,8 +1,8 @@
 package test;
 
-import org.junit.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import ru.yandex.javacourse.manager.InMemoryTaskManager;
 import ru.yandex.javacourse.manager.TaskManager;
@@ -11,76 +11,124 @@ import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("Тестирование менеджера задач")
 public class InMemoryTaskManagerTest {
 
-    @Test
-    public void checkEqualsTask() {
-        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
-        Task task2 = new Task(0, "Задача 2", "Описание задачи 2", Status.NEW);
+    private TaskManager manager;
 
+    //Константы для тестов
+    private static final int DEFAULT_ID = 0;
+    private static final int DIFFERENT_ID = 1;
+    private static final String TASK_TITLE = "Задача 1";
+    private static final String TASK_DESCRIPTION = "Описание задачи 1";
+    private static final String TASK_TITLE_2 = "Задача 2";
+    private static final String TASK_DESCRIPTION_2 = "Описание задачи 2";
+
+    private static final String EPIC_TITLE = "Эпик 1";
+    private static final String EPIC_DESCRIPTION = "Описание эпика 1";
+    private static final String EPIC_TITLE_2 = "Эпик 2";
+    private static final String EPIC_DESCRIPTION_2 = "Описание эпика 2";
+
+    private static final String SUBTASK_TITLE = "Подзадача 1";
+    private static final String SUBTASK_DESCRIPTION = "Описание подзадачи 1";
+    private static final String SUBTASK_TITLE_2 = "Подзадача 2";
+    private static final String SUBTASK_DESCRIPTION_2 = "Описание подзадачи 2";
+
+    private static final Status DEFAULT_STATUS = Status.NEW;
+
+    @BeforeEach
+    public void beforeEach(){
+        manager = new InMemoryTaskManager();
+    }
+
+    @DisplayName("Тестирование эквивалентности двух задач с одинаковыми id")
+    @Test
+    public void equals_TasksWithSameIdButDifferentFields_ReturnsTrue() {
+        // Given: Добавляем две задачи с одинаковыми id
+        Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
+        Task task2 = new Task(DEFAULT_ID, TASK_TITLE_2, TASK_DESCRIPTION_2, DEFAULT_STATUS);
+
+        // Then: Проверяем что две задачи эквивалентны
         assertEquals(task1, task2, "Тест не пройдет - экземпляры не соответствуют");
     }
 
+    @DisplayName("Тестирование не эквивалентности двух задач с разными id")
     @Test
-    public void checkNotEqualsTask() {
-        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
-        Task task2 = new Task(1, "Задача 2", "Описание задачи 2", Status.NEW);
+    public void equals_TasksWithSameIdButDifferentFields_ReturnsFalse() {
+        // Given: Добавляем две задачи с разными id
+        Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
+        Task task2 = new Task(DIFFERENT_ID, TASK_TITLE_2, TASK_DESCRIPTION_2, DEFAULT_STATUS);
 
+        // Then: Проверяем что две задачи не эквивалентны
         assertNotEquals(task1, task2, "Тест не пройдет - экземпляры соответствуют");
     }
 
+    @DisplayName("Тестирование эквивалентности двух подзадач с одинаковыми id")
     @Test
-    public void checkEqualsSubtask() {
-        TaskManager manager = new InMemoryTaskManager();
-        Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
+    public void equals_SubtasksWithSameIdButDifferentFields_ReturnsTrue() {
+        // Given: Подготовка эпика и два Subtask с одинаковым id
+        Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic1);
 
-        Subtask subtask1 = new Subtask(0, "Подзадача 1", "Описание подзадачи 1"
-                , Status.NEW, epic1.getId());
-        Subtask subtask2 = new Subtask(0, "Подзадача 2", "Описание подзадачи 2"
-                , Status.NEW, epic1.getId());
+        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
+                , DEFAULT_STATUS, epic1.getId());
+        Subtask subtask2 = new Subtask(DEFAULT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2
+                , DEFAULT_STATUS, epic1.getId());
 
+        // Then: Проверяем что две подзадачи эквивалентны
         assertEquals(subtask1, subtask2, "Тест не пройдет - экземпляры не соответствуют");
     }
 
+    @DisplayName("Тестирование не эквивалентности двух подзадач с разными id")
     @Test
-    public void checkNotEqualsSubtask() {
-        TaskManager manager = new InMemoryTaskManager();
-        Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
+    public void equals_SubtasksWithSameIdButDifferentFields_ReturnsFalse() {
+        // Given: Подготовка эпика и два Subtask с разными id
+        Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic1);
 
-        Subtask subtask1 = new Subtask(0, "Подзадача 1", "Описание подзадачи 1"
-                , Status.NEW, epic1.getId());
-        Subtask subtask2 = new Subtask(1, "Подзадача 2", "Описание подзадачи 2"
-                , Status.NEW, epic1.getId());
+        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
+                , DEFAULT_STATUS, epic1.getId());
+        Subtask subtask2 = new Subtask(DIFFERENT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2
+                , DEFAULT_STATUS, epic1.getId());
 
+        // Then: Проверяем что две подзадачи не эквивалентны
         assertNotEquals(subtask1, subtask2, "Тест не пройдет - экземпляры соответствуют");
     }
 
+    @DisplayName("Тестирование эквивалентности двух Эпиков с одинаковыми id")
     @Test
-    public void checkEqualsEpic() {
+    public void equals_EpicsWithSameIdButDifferentFields_ReturnsTrue() {
+        // Given: Добавляем два Эпика с одинаковыми id
+        Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
+        Epic epic2 = new Epic(DEFAULT_ID, EPIC_TITLE_2, EPIC_DESCRIPTION_2, DEFAULT_STATUS);
 
-        Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
-        Epic epic2 = new Epic(0, "Эпик 2", "Описание эпика 2", Status.NEW);
-
+        // Then: Проверяем что два Эпика эквивалентны
         assertEquals(epic1, epic2, "Тест не пройдет - экземпляры не соответствуют");
     }
 
+    @DisplayName("Тестирование не эквивалентности двух Эпиков с разными id")
     @Test
-    public void checkNotEqualsEpic() {
+    public void equals_EpicsWithSameIdButDifferentFields_ReturnsFalse() {
+        // Given: Добавляем два Эпика с разными id
+        Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
+        Epic epic2 = new Epic(DIFFERENT_ID, EPIC_TITLE_2, EPIC_DESCRIPTION_2, DEFAULT_STATUS);
 
-        Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
-        Epic epic2 = new Epic(1, "Эпик 2", "Описание эпика 2", Status.NEW);
-
+        // Then: Проверяем что два Эпика не эквивалентны
         assertNotEquals(epic1, epic2, "Тест не пройдет - экземпляры соответствуют");
     }
 
+    @DisplayName("Тестирование не эквивалентности всех типов задач по id")
     @Test
-    public void checkEqualsAll() {
-        Epic epic = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
-        Task task = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
-        Subtask subtask = new Subtask(0, "Подзадача 1", "Описание подзадачи 1", Status.NEW, epic.getId());
+    public void equals_DifferentTaskTypesWithSameId_ReturnsFalse() {
+        // Given: Добавляем Задачу Эпика и подзадачу с одинаковыми id
+        Epic epic = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
+        Task task = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
+        Subtask subtask = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
+                , DEFAULT_STATUS, epic.getId());
 
+        // Then: Проверяем что между разными типами задач не может быть эквивалентности
         assertAll(
                 () -> assertNotEquals(task, epic, "Task и Epic с одинаковым ID не должны быть равны"),
                 () -> assertNotEquals(task, subtask, "Task и Subtask с одинаковым ID не должны быть равны"),
@@ -88,24 +136,29 @@ public class InMemoryTaskManagerTest {
         );
     }
 
+    @DisplayName("Тестирование поиска по id и соответствия полученных данных")
     @Test
-    public void searchForId() {
-        TaskManager manager = new InMemoryTaskManager();
-        Epic epic = new Epic(0, "Эпик 1", "Описание эпика 1", Status.NEW);
+    public void equals_AllFieldsDifferentTaskInManager_ReturnTrue() {
+        // Given: создаётся 3 задачи разного типа
+        Epic epic = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic);
 
-        Subtask subtask = new Subtask(1, "Подзадача 1", "Описание подзадачи 1"
-                , Status.NEW, epic.getId());
+        Subtask subtask = new Subtask(DIFFERENT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
+                , DEFAULT_STATUS, epic.getId());
         manager.addTask(subtask);
 
-        Task task = new Task(2, "Задача 1", "Описание задачи 1", Status.NEW);
+        Task task = new Task(2, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(task);
 
+        // When: Получаем разные типы задач из менеджера по id
         Task foundEpic = manager.getTaskById(epic.getId());
         Task foundSubtask = manager.getTaskById(subtask.getId());
         Task foundTask = manager.getTaskById(task.getId());
 
-
+        // Then:
+        // 1 - Проверяется эквивалентность созданных задач и задач из менеджера
+        // 2 - Проверяется соответствие данных Эпика
+        // 3 - проверяется соответствие ID у Epic и EpicID у Subtask
         assertAll(
                 () -> assertEquals(epic, foundEpic),
                 () -> assertEquals(subtask, foundSubtask),
@@ -120,23 +173,36 @@ public class InMemoryTaskManagerTest {
 
     }
 
+    @DisplayName("Тестирование функционала по автоматическому изменению ID")
     @Test
-    public void checkAutoChangeId() {
-        TaskManager manager = new InMemoryTaskManager();
-        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
-        Task task2 = new Task(0, "Задача 2", "Описание задачи 2", Status.NEW);
+    public void equals_TaskFieldAfterAddInManager_ReturnTrue() {
+        // Given: создаётся 2 задачи
+        Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
+        Task task2 = new Task(DEFAULT_ID, TASK_TITLE_2, TASK_DESCRIPTION_2, DEFAULT_STATUS);
+
+        // When: добавляем задачи в manager
         manager.addTask(task1);
         manager.addTask(task2);
 
-        assertEquals("Задача 2", manager.getTaskById(1).getTitle());
+        // Then: Проверяем что задача по ID(1) в менеджере соответствует task2.
+        // При создании task2 id задавалось как 0
+        assertEquals("Задача 2", manager.getAllTasks().getLast().getTitle());
     }
 
+    @DisplayName("Тестирование эквивалентности всех полей задачи после добавления в manager")
     @Test
-    public void checkAllFieldsEquals() {
-        TaskManager manager = new InMemoryTaskManager();
-        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", Status.NEW);
+    public void equals_DifferentTaskAllFields_ReturnTrue() {
+        // Given: создаётся задача
+        Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
+
+        // When: добавляем задачу в manager
         manager.addTask(task1);
 
+        // Then: Проверяем поля task1 и задачи из менеджера
+        // 1 - Проверка поля ID
+        // 2 - Проверка поля title
+        // 3 - Проверка поля description
+        // 4 - Проверка поля Status
         assertAll(
                 () -> assertEquals(task1.getId(), manager.getTaskById(task1.getId()).getId(),
                         "Поля ID отличаются"),
@@ -144,7 +210,7 @@ public class InMemoryTaskManagerTest {
                         "Поля Title отличаются"),
                 () -> assertEquals("Описание задачи 1", manager.getTaskById(task1.getId()).getDescription(),
                         "Поля Description отличаются"),
-                () -> assertEquals(Status.NEW,manager.getTaskById(task1.getId()).getStatus(),
+                () -> assertEquals(Status.NEW, manager.getTaskById(task1.getId()).getStatus(),
                         "Поля Status отличаются")
         );
     }

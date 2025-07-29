@@ -6,12 +6,12 @@ import ru.yandex.javacourse.tasks.Task;
 
 import java.util.ArrayList;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
     private static final int MAX_HISTORY_SIZE = 10;
     private final ArrayList<Task> historyLastTasks = new ArrayList<>();
 
     @Override
-    public void add(Task task){
+    public void add(Task task) {
 
         if (historyLastTasks.size() >= MAX_HISTORY_SIZE) {
             historyLastTasks.removeFirst();
@@ -26,12 +26,11 @@ public class InMemoryHistoryManager implements HistoryManager{
         return new ArrayList<>(historyLastTasks);
     }
 
-    private Task createCopyTask(Task original){
+    private Task createCopyTask(Task original) {
         if (original instanceof Epic) {
             Epic epic = (Epic) original;
             return new Epic(epic.getId(), epic.getTitle(), epic.getDescription(), epic.getStatus());
-        }
-        else if (original instanceof Subtask) {
+        } else if (original instanceof Subtask) {
             Subtask subtask = (Subtask) original;
             return new Subtask(
                     subtask.getId(),
@@ -40,8 +39,7 @@ public class InMemoryHistoryManager implements HistoryManager{
                     subtask.getStatus(),
                     subtask.getEpicId()
             );
-        }
-        else {
+        } else {
             return new Task(
                     original.getId(),
                     original.getTitle(),
