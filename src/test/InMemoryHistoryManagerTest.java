@@ -11,8 +11,9 @@ import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Тестирование истории просмотров задач")
 class InMemoryHistoryManagerTest {
@@ -54,16 +55,17 @@ class InMemoryHistoryManagerTest {
         }
 
         // When: Получаем задачу по id, это так же обновит историю
-        Task temp = manager.getTaskById(2);
+        int idFirst = manager.getHistory().getFirst().getId();
+        Task temp = manager.getTaskById(idFirst);
 
         // Then: Проверяем что: Вторая задача c id 2 последней в истории
-        assertEquals("Описание 2", manager.getHistory().getLast().getDescription(), "После добавления 10 задач," +
-                " 2 задача должна быть первой в истории");
+        assertEquals(temp, manager.getHistory().getLast(),
+                "После добавления 10 задач и вызова метода getTaskById, первая задача должна стать последней");
 
     }
 
     @Test
-    @DisplayName("История не должна содержать дубликатов задач")
+    @DisplayName("История не должна содержать дубликаты задач")
     public void getHistory_ShouldNotContainDuplicates() {
         // Given: Создание и добавление в manager 10 задач
         for (int i = 0; i <= 9; i++) {
@@ -71,12 +73,13 @@ class InMemoryHistoryManagerTest {
             // When: Добавляем задачу в менеджер
             manager.addTask(task);
         }
-        // When: Получаем задачу по id и введем счетчик подсчета задач из истории
-        Task temp = manager.getTaskById(12);
+        // When: Получаем задачу по id и вводим счетчик подсчета задач из истории
+        int idFirst = manager.getHistory().getFirst().getId();
+        Task temp = manager.getTaskById(idFirst);
 
         int counter = 0;
         for (Task task : manager.getHistory()) {
-            if (task.getId() == 12) {
+            if (task.getId() == idFirst) {
                 counter++;
             }
         }
@@ -95,17 +98,17 @@ class InMemoryHistoryManagerTest {
             // When: Добавляем задачу в менеджер
             manager.addTask(task);
         }
-        Node prev = manager.getNode().get(25).getPrev();
-        Node next = manager.getNode().get(25).getNext();
 
-        manager.deleteTask(manager.getTaskById(25));
+        Node prev = manager.getNode().get(3).getPrev();
+        Node next = manager.getNode().get(3).getNext();
+
+        manager.deleteTask(manager.getTaskById(3));
 
         // Then: Проверяем что: соседние ноды, после удаления указывают друг на друга
         assertAll(
-                () -> assertEquals(prev, manager.getNode().get(26).getPrev(),
-                        "После удаления ноды, prev следующей Ноды должен быть равен, prev удалённой ноды "),
-                () -> assertEquals(next, manager.getNode().get(24).getNext(),
-                        "После удаления ноды, next предыдущей Ноды должен быть равен, next удалённой ноды ")
+                () -> assertEquals(prev, manager.getNode().get(4).getPrev(), "prev следующей ноды должен указывать на prev удалённой"),
+                () -> assertEquals(next, manager.getNode().get(2).getNext(), "next предыдущей ноды должен указывать на next удалённой"),
+                () -> assertNull(manager.getNode().get(3), "удалённая нода должна отсутствовать в manager")
         );
     }
 
