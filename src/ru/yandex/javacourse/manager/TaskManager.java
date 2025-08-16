@@ -7,6 +7,7 @@ import ru.yandex.javacourse.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
 
@@ -51,5 +52,7 @@ public interface TaskManager {
     void updateEpicStatus(Integer id);
 
     ArrayList<Task> getHistory();
+
+    Map<Integer, Node> getNode();
 
 }

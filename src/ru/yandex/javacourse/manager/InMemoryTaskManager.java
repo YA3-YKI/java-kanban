@@ -8,6 +8,7 @@ import ru.yandex.javacourse.tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
     public static int id = 0;
@@ -108,6 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
         int newId = generateId();
         newTask.setId(newId);
         tasks.put(generateId(), newTask);
+        historyManager.add(newTask);
     }
 
     @Override
@@ -123,6 +125,8 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             System.out.println("Ошибка: ru.yandex.javacourse.tasks.Epic с таким ID " + newSubtask.getEpicId() + " не найден");
         }
+
+        historyManager.add(newSubtask);
     }
 
     @Override
@@ -130,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
         int newId = generateId();
         newEpic.setId(newId);
         epics.put(newId, newEpic);
+        historyManager.add(newEpic);
     }
 
     @Override
@@ -150,6 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(Task task) {
         tasks.remove(task.getId());
+        historyManager.remove(task.getId());
     }
 
     @Override
@@ -160,6 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             epic.getSubtaskIds().remove(Integer.valueOf(subtask.getId()));
             updateEpicStatus(epic.getId());
+            historyManager.remove(subtask.getId());
         }
 
     }
@@ -168,9 +175,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpic(Epic epic) {
         for (Integer subtaskId : epic.getSubtaskIds()) {
             subtasks.remove(subtaskId);
+            historyManager.remove(subtaskId);
         }
 
         epics.remove(epic.getId());
+        historyManager.remove(epic.getId());
     }
 
     @Override
@@ -227,6 +236,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getHistory() {
-        return historyManager.getHistory();
+        return (ArrayList<Task>) historyManager.getHistory();
+    }
+
+    @Override
+    public Map<Integer, Node> getNode(){
+        return historyManager.getNodeMap();
     }
 }
