@@ -240,7 +240,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Map<Integer, Node> getNode(){
+    public Map<Integer, Node> getNode() {
         return historyManager.getNodeMap();
     }
 }

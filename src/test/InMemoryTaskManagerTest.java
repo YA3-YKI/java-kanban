@@ -39,7 +39,7 @@ public class InMemoryTaskManagerTest {
     private static final Status DEFAULT_STATUS = Status.NEW;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         manager = new InMemoryTaskManager();
     }
 

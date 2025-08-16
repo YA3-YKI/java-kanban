@@ -75,8 +75,8 @@ class InMemoryHistoryManagerTest {
         Task temp = manager.getTaskById(12);
 
         int counter = 0;
-        for (Task task : manager.getHistory()){
-            if (task.getId() == 12){
+        for (Task task : manager.getHistory()) {
+            if (task.getId() == 12) {
                 counter++;
             }
         }
@@ -139,7 +139,6 @@ class InMemoryHistoryManagerTest {
         manager.deleteSubtask(subtask2);
 
         // Then: Проверяем что, После удаления задач размер nodeMap = 2
-        assertEquals(2, manager.getNode().size(),"После удаления должно остаться всего 2 Ноды");
-
+        assertEquals(2, manager.getNode().size(), "После удаления должно остаться всего 2 Ноды");
     }
 }

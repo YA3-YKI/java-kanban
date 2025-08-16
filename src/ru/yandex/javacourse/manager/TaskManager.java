@@ -54,5 +54,4 @@ public interface TaskManager {
     ArrayList<Task> getHistory();
 
     Map<Integer, Node> getNode();
-
 }

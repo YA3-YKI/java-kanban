@@ -7,7 +7,7 @@ public class Node {
     Node prev;
     Node next;
 
-    public Node(Task task, Node prev, Node next){
+    public Node(Task task, Node prev, Node next) {
         this.task = task;
         this.prev = prev;
         this.next = next;
@@ -17,8 +17,8 @@ public class Node {
     public String toString() {
         return "Node{" +
                 "task=" + task +
-                ", prev=" + (prev == null ? null:prev.task) +
-                ", next=" + (next == null ? null:next.task) +
+                ", prev=" + (prev == null ? null : prev.task) +
+                ", next=" + (next == null ? null : next.task) +
                 '}';
     }
 
