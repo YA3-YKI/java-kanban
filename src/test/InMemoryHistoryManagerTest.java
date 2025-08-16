@@ -116,18 +116,18 @@ class InMemoryHistoryManagerTest {
         Epic epic1 = new Epic(1, "Эпик 1", "Описание Эпика1", Status.NEW);
         manager.addTask(epic1);
 
-        Subtask subtask1 = new Subtask(3, "Подзадача1", "Описание подзадачи1"
-                , Status.NEW, epic1.getId());
+        Subtask subtask1 = new Subtask(3, "Подзадача1", "Описание подзадачи1",
+                Status.NEW, epic1.getId());
         manager.createSubtask(subtask1);
-        Subtask subtask2 = new Subtask(4, "Подзадача2", "Описание подзадачи2"
-                , Status.NEW, epic1.getId());
+        Subtask subtask2 = new Subtask(4, "Подзадача2", "Описание подзадачи2",
+                Status.NEW, epic1.getId());
         manager.createSubtask(subtask2);
 
         Epic epic2 = new Epic(2, "Эпик 2", "Описание Эпика2", Status.NEW);
         manager.addTask(epic2);
 
-        Subtask subtask3 = new Subtask(5, "Подзадача3", "Описание подзадачи3"
-                , Status.NEW, epic2.getId());
+        Subtask subtask3 = new Subtask(5, "Подзадача3", "Описание подзадачи3",
+                Status.NEW, epic2.getId());
         manager.createSubtask(subtask3);
 
         Task task = new Task(6, TASK_TITLE, TASK_DESCRIPTION, Status.NEW);
