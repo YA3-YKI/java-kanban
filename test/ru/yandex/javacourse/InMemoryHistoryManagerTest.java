@@ -4,16 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.javacourse.manager.InMemoryTaskManager;
-import ru.yandex.javacourse.manager.Node;
 import ru.yandex.javacourse.manager.TaskManager;
 import ru.yandex.javacourse.tasks.Epic;
 import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
 
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Тестирование истории просмотров задач")
 class InMemoryHistoryManagerTest {
@@ -89,7 +86,7 @@ class InMemoryHistoryManagerTest {
                 " должна встречаться в истории только один раз");
     }
 
-    //Отключаю этот тест, не могу добиться что бы GitActions его принял, хотя тест работает
+//Отключаю этот тест, не могу добиться что бы GitActions его принял, хотя тест работает
 //    @Test
 //    @DisplayName("При удалении ноды должны поменять поля last у предыдущей ноды и first e следующей")
 //    public void getNode_AfterRemoveTask_ReturnsNewPrevAndNewNextNode() {
