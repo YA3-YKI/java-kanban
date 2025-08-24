@@ -1,4 +1,4 @@
-package test;
+package ru.yandex.javacourse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +39,7 @@ public class InMemoryTaskManagerTest {
     private static final Status DEFAULT_STATUS = Status.NEW;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         manager = new InMemoryTaskManager();
     }
 
@@ -72,10 +72,10 @@ public class InMemoryTaskManagerTest {
         Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic1);
 
-        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
-                , DEFAULT_STATUS, epic1.getId());
-        Subtask subtask2 = new Subtask(DEFAULT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2
-                , DEFAULT_STATUS, epic1.getId());
+        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION,
+                DEFAULT_STATUS, epic1.getId());
+        Subtask subtask2 = new Subtask(DEFAULT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2,
+                DEFAULT_STATUS, epic1.getId());
 
         // Then: Проверяем что две подзадачи эквивалентны
         assertEquals(subtask1, subtask2, "Тест не пройдет - экземпляры не соответствуют");
@@ -88,10 +88,10 @@ public class InMemoryTaskManagerTest {
         Epic epic1 = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic1);
 
-        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
-                , DEFAULT_STATUS, epic1.getId());
-        Subtask subtask2 = new Subtask(DIFFERENT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2
-                , DEFAULT_STATUS, epic1.getId());
+        Subtask subtask1 = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION,
+                DEFAULT_STATUS, epic1.getId());
+        Subtask subtask2 = new Subtask(DIFFERENT_ID, SUBTASK_TITLE_2, SUBTASK_DESCRIPTION_2,
+                DEFAULT_STATUS, epic1.getId());
 
         // Then: Проверяем что две подзадачи не эквивалентны
         assertNotEquals(subtask1, subtask2, "Тест не пройдет - экземпляры соответствуют");
@@ -125,8 +125,8 @@ public class InMemoryTaskManagerTest {
         // Given: Добавляем Задачу Эпика и подзадачу с одинаковыми id
         Epic epic = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         Task task = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
-        Subtask subtask = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
-                , DEFAULT_STATUS, epic.getId());
+        Subtask subtask = new Subtask(DEFAULT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION,
+                DEFAULT_STATUS, epic.getId());
 
         // Then: Проверяем что между разными типами задач не может быть эквивалентности
         assertAll(
@@ -143,8 +143,8 @@ public class InMemoryTaskManagerTest {
         Epic epic = new Epic(DEFAULT_ID, EPIC_TITLE, EPIC_DESCRIPTION, DEFAULT_STATUS);
         manager.addTask(epic);
 
-        Subtask subtask = new Subtask(DIFFERENT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION
-                , DEFAULT_STATUS, epic.getId());
+        Subtask subtask = new Subtask(DIFFERENT_ID, SUBTASK_TITLE, SUBTASK_DESCRIPTION,
+                DEFAULT_STATUS, epic.getId());
         manager.addTask(subtask);
 
         Task task = new Task(2, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
