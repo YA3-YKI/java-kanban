@@ -99,7 +99,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         };
     }
 
-    public void lineReader(FileBackedTaskManager fileBackedTaskManager){
+    public void lineReader(FileBackedTaskManager fileBackedTaskManager) {
         int lineCount;
         try (BufferedReader reader = new BufferedReader(new FileReader(fileBackedTaskManager.tempFilePath.toFile()))) {
             lineCount = (int) reader.lines().count();
