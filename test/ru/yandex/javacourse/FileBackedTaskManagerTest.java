@@ -7,7 +7,6 @@ import ru.yandex.javacourse.manager.FileBackedTaskManager;
 import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Task;
 
-
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +16,21 @@ class FileBackedTaskManagerTest {
     private FileBackedTaskManager fileBackedTaskManager;
     //Константы для тестов
     private static final int DEFAULT_ID = 0;
+    private static final int DIFFERENT_ID = 1;
     private static final String TASK_TITLE = "Задача 1";
     private static final String TASK_DESCRIPTION = "Описание задачи 1";
     private static final String TASK_TITLE_2 = "Задача 2";
     private static final String TASK_DESCRIPTION_2 = "Описание задачи 2";
-        private static final Status DEFAULT_STATUS = Status.NEW;
+
+    private static final String EPIC_TITLE = "Эпик 1";
+    private static final String EPIC_DESCRIPTION = "Описание эпика 1";
+
+
+    private static final String SUBTASK_TITLE = "Подзадача 1";
+    private static final String SUBTASK_DESCRIPTION = "Описание подзадачи 1";
+
+
+    private static final Status DEFAULT_STATUS = Status.NEW;
 
     @BeforeEach
     void setUp() throws IOException {
