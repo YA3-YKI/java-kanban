@@ -7,7 +7,6 @@ import ru.yandex.javacourse.manager.FileBackedTaskManager;
 import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Task;
 
-
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,61 +14,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Тестирование файлового варианта менеджера задач")
 class FileBackedTaskManagerTest {
     private FileBackedTaskManager fileBackedTaskManager;
-    //Константы для тестов
     private static final int DEFAULT_ID = 0;
     private static final String TASK_TITLE = "Задача 1";
     private static final String TASK_DESCRIPTION = "Описание задачи 1";
-    private static final String TASK_TITLE_2 = "Задача 2";
-    private static final String TASK_DESCRIPTION_2 = "Описание задачи 2";
-        private static final Status DEFAULT_STATUS = Status.NEW;
+    private static final Status DEFAULT_STATUS = Status.NEW;
 
     @BeforeEach
     void setUp() throws IOException {
         fileBackedTaskManager = new FileBackedTaskManager();
     }
 
-
     @DisplayName("После удаления и восстановления задачи из файла список сохраняет размер")
     @Test
     public void restoreFromFile_afterDeleteAll_restoresListSize() throws IOException {
-        // Given: Добавляем задачи
         Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
-        Task task2 = new Task(DEFAULT_ID, TASK_TITLE_2, TASK_DESCRIPTION_2, DEFAULT_STATUS);
         fileBackedTaskManager.addTask(task1);
-        fileBackedTaskManager.addTask(task2);
 
-        //When: Получаем размер List'а, очищаем список задач, восстанавливаем задачи из temp файл
-        // и получаем новый размер списка всех задач
         int initialSize = fileBackedTaskManager.getAllTasks().size();
         fileBackedTaskManager.deleteAllTasks();
 
-        fileBackedTaskManager.lineReader(fileBackedTaskManager);
-        int restoredSize = fileBackedTaskManager.getAllTasks().size();
+        FileBackedTaskManager restoredManager = FileBackedTaskManager.loadFromFile(fileBackedTaskManager.getFilePath().toFile());
+        int restoredSize = restoredManager.getAllTasks().size();
 
-        // Then: Проверяeм что размер до удаления и после создания равны
-        assertEquals(initialSize, restoredSize, "Тест не пройден - размеры не соответствуют");
+        assertEquals(initialSize, restoredSize, "Размеры списков не совпадают после восстановления");
     }
 
-    @DisplayName("После удаления и восстановления задачи из файла данные совпадают с оригиналом")
+    @DisplayName("После удаления и восстановления задачи данные совпадают")
     @Test
     void restoreFromFile_afterDeleteAll_restoresTaskCorrectly() throws IOException {
-        // Given: Добавляем задачу
         Task task1 = new Task(DEFAULT_ID, TASK_TITLE, TASK_DESCRIPTION, DEFAULT_STATUS);
         fileBackedTaskManager.addTask(task1);
 
-        // When: Очищаем список задач и восстанавливаем их из temp файла
         fileBackedTaskManager.deleteAllTasks();
-        fileBackedTaskManager.lineReader(fileBackedTaskManager);
-        int newID = fileBackedTaskManager.getAllTasks().getFirst().getId();
+        FileBackedTaskManager restoredManager = FileBackedTaskManager.loadFromFile(fileBackedTaskManager.getFilePath().toFile());
+        Task restoredTask = restoredManager.getAllTasks().getFirst();
 
-        // Then: Проверяем, что восстановленная задача совпадает с исходными данными
         assertAll(
-                () -> assertEquals(TASK_TITLE, fileBackedTaskManager.getTaskById(newID).getTitle(),
-                        "Восстановленный title задачи не совпадает с оригиналом"),
-                () -> assertEquals(TASK_DESCRIPTION, fileBackedTaskManager.getTaskById(newID).getDescription(),
-                        "Восстановленное описание задачи не совпадает с оригиналом"),
-                () -> assertEquals(DEFAULT_STATUS, fileBackedTaskManager.getTaskById(newID).getStatus(),
-                        "Восстановленный статус задачи не совпадает с оригиналом")
+                () -> assertEquals(TASK_TITLE, restoredTask.getTitle()),
+                () -> assertEquals(TASK_DESCRIPTION, restoredTask.getDescription()),
+                () -> assertEquals(DEFAULT_STATUS, restoredTask.getStatus())
         );
     }
 
@@ -77,9 +60,8 @@ class FileBackedTaskManagerTest {
     @Test
     void restoreFromEmptyFile_returnsEmptyList() throws IOException {
         fileBackedTaskManager.deleteAllTasks();
-        fileBackedTaskManager.lineReader(fileBackedTaskManager);
+        FileBackedTaskManager restoredManager = FileBackedTaskManager.loadFromFile(fileBackedTaskManager.getFilePath().toFile());
 
-        assertTrue(fileBackedTaskManager.getAllTasks().isEmpty(),
-                "После восстановления из пустого файла список должен быть пустым");
+        assertTrue(restoredManager.getAllTasks().isEmpty(), "Список должен быть пустым");
     }
 }
