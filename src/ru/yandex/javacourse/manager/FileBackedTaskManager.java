@@ -1,5 +1,6 @@
 package ru.yandex.javacourse.manager;
 
+import ru.yandex.javacourse.errors.ManagerSaveException;
 import ru.yandex.javacourse.tasks.Epic;
 import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
@@ -22,44 +23,40 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public void createTask(Task newTask) {
         super.createTask(newTask);
-        save(newTask);
+        save();
     }
 
     @Override
     public void createSubtask(Subtask newSubtask) {
         super.createSubtask(newSubtask);
-        save(newSubtask);
+        save();
     }
 
     @Override
     public void createEpic(Epic newEpic) {
         super.createEpic(newEpic);
-        save(newEpic);
+        save();
     }
 
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        save(task);
+        save();
     }
 
-    private void save(Task task) {
-        String result;
+    public Path getFilePath() {
+        return this.tempFilePath;
+    }
 
+    private void save() {
 
-        if (task.getClass().getSimpleName().equals("Subtask")) {
-
-            result = task.getId() + "," + task.getClass().getSimpleName() + "," + task.getTitle() + "," + task.getStatus() + "," +
-                    task.getDescription() + "," + subtasks.get(task.getId()).getEpicId() + "\n";
-        } else {
-            result = task.getId() + "," + task.getClass().getSimpleName() + "," + task.getTitle() + "," + task.getStatus() + "," +
-                    task.getDescription() + "\n";
-        }
-
-        try (Writer fileWriter = new FileWriter(tempFilePath.toFile(), true)) {
-            fileWriter.write(result);
+        try (Writer writer = new FileWriter(tempFilePath.toFile())) {
+            writer.write("id,type,title,status,description,epic\n"); // заголовок CSV
+            for (Task task : tasks.values()) writer.write(task.toString() + "\n");
+            for (Epic epic : epics.values()) writer.write(epic.toString() + "\n");
+            for (Subtask subtask : subtasks.values()) writer.write(subtask.toString() + "\n");
         } catch (IOException e) {
-            System.out.println("Ошибка записи первой строки");
+            throw new ManagerSaveException("Ошибка при сохранении файла", e);
         }
     }
 
@@ -68,11 +65,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             File temp = File.createTempFile("temp", ".csv");
             filePath = temp.getPath();
-            try (Writer fileWriter = new FileWriter(temp)) {
-                fileWriter.write("id,type,name,status,description,epic\n");
-            } catch (IOException e) {
-                System.out.println("Ошибка записи первой строки");
-            }
         } catch (IOException e) {
             System.out.println("Ошибка создания темпового файла");
         }
@@ -99,41 +91,38 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         };
     }
 
-    public void lineReader(FileBackedTaskManager fileBackedTaskManager) {
-        int lineCount;
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileBackedTaskManager.tempFilePath.toFile()))) {
-            lineCount = (int) reader.lines().count();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileBackedTaskManager.tempFilePath.toFile()))) {
+    public static FileBackedTaskManager loadFromFile(File file) throws IOException {
+        FileBackedTaskManager manager = new FileBackedTaskManager();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.readLine();
-            for (int i = 1; i < lineCount; i++) {
-                String line = reader.readLine();
+            String line;
+            while ((line = reader.readLine()) != null) {
                 Task newTask = fromTempFile(line);
-                fileBackedTaskManager.addTask(newTask);
+                manager.addTask(newTask);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ManagerSaveException("Ошибка при загрузке файла", e);
         }
+        return manager;
     }
 
     public static void main(String[] args) throws IOException {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
+        FileBackedTaskManager manager = new FileBackedTaskManager();
+
         Task task = new Task(0, "Задача 1", "Описание Задачи1", Status.NEW);
-        fileBackedTaskManager.createTask(task);
+        manager.createTask(task);
+
         Epic epic = new Epic(0, "Эпик 1", "Описание Эпика1", Status.NEW);
-        fileBackedTaskManager.createEpic(epic);
+        manager.createEpic(epic);
+
         Subtask subtask = new Subtask(0, "Подзадача 1", "Описание Подзадачи1", Status.NEW, epic.getId());
-        fileBackedTaskManager.createSubtask(subtask);
+        manager.createSubtask(subtask);
 
-        fileBackedTaskManager.deleteAllTasks();
-        fileBackedTaskManager.deleteAllEpics();
-        fileBackedTaskManager.deleteAllSubtasks();
+        System.out.println("Файл сохранён в: " + manager.tempFilePath);
 
-        fileBackedTaskManager.lineReader(fileBackedTaskManager);
-
-        System.out.println(fileBackedTaskManager.tempFilePath);
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(manager.tempFilePath.toFile());
+        System.out.println("Загруженные эпики': " + loaded.getAllEpics());
+        System.out.println("Загруженные задачи: " + loaded.getAllTasks());
+        System.out.println("Загруженные подзадачи: " + loaded.getAllSubtasks());
     }
 }
