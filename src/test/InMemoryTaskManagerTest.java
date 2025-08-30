@@ -1,4 +1,4 @@
-package ru.yandex.javacourse.test;
+package ru.yandex.javacourse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
