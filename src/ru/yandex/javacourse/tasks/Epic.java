@@ -21,4 +21,9 @@ public class Epic extends Task {
     public void addSubtaskId(int subtaskId) {
         subtaskIds.add(subtaskId);
     }
+
+    @Override
+    public String toString() {
+        return getId() + "," + this.getClass().getSimpleName() + "," + getTitle() + "," + getStatus() + "," + getDescription();
+    }
 }

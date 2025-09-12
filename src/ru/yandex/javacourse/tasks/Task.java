@@ -48,16 +48,6 @@ public class Task {
     }
 
     @Override
-    public String toString() {
-        return "\n" + "ru.yandex.javacourse.tasks.Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -70,4 +60,10 @@ public class Task {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return id + "," + this.getClass().getSimpleName() + "," + title + "," + status + "," + description;
+    }
+
 }
