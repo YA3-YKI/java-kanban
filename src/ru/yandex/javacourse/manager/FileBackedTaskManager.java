@@ -1,7 +1,10 @@
 package ru.yandex.javacourse.manager;
 
 import ru.yandex.javacourse.errors.ManagerSaveException;
-import ru.yandex.javacourse.tasks.*;
+import ru.yandex.javacourse.tasks.Epic;
+import ru.yandex.javacourse.tasks.Status;
+import ru.yandex.javacourse.tasks.Subtask;
+import ru.yandex.javacourse.tasks.Task;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -80,7 +83,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка при загрузке файла", e);
         }
 
-        // пересчитываем время для эпиков
         for (Epic epic : manager.getAllEpics()) {
             List<Subtask> epicSubtasks = manager.getAllSubtasks().stream()
                     .filter(s -> s.getEpicId() == epic.getId())
