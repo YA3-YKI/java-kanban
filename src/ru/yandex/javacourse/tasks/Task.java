@@ -10,7 +10,7 @@ public class Task {
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private int id;
-    private final String title;
+    private String title;
     private String description;
     private Status status;
     private Duration duration;
@@ -28,7 +28,7 @@ public class Task {
         this.status = status;
         this.duration = duration;
         this.startTime = startTime;
-        this.endTime = (duration != null && startTime != null) ? startTime.plus(duration) : null;
+        recalcEndTime();
     }
 
     public int getId() {
@@ -43,8 +43,16 @@ public class Task {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Status getStatus() {
@@ -77,61 +85,91 @@ public class Task {
         return endTime;
     }
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     private void recalcEndTime() {
-        if (duration != null && startTime != null) {
-            this.endTime = startTime.plus(duration);
+        if (this.startTime != null && this.duration != null) {
+            this.endTime = this.startTime.plus(this.duration);
         } else {
             this.endTime = null;
         }
     }
 
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(id),
-                "TASK",
-                title,
-                status.name(),
-                description,
-                duration != null ? String.valueOf(duration.toMinutes()) : "",
-                startTime != null ? startTime.format(FORMATTER) : "",
-                endTime != null ? endTime.format(FORMATTER) : "",
-                ""
-        );
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Task)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id &&
-                Objects.equals(title, task.title) &&
-                Objects.equals(description, task.description) &&
-                status == task.status &&
-                Objects.equals(duration, task.duration) &&
-                Objects.equals(startTime, task.startTime) &&
-                Objects.equals(endTime, task.endTime);
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, status, duration, startTime, endTime);
+        return Objects.hash(getClass(), id);
     }
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", duration=" + duration +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                '}';
+        String dur = (duration != null) ? String.valueOf(duration.toMinutes()) : "";
+        String st = (startTime != null) ? startTime.format(FORMATTER) : "";
+        String et = (endTime != null) ? endTime.format(FORMATTER) : "";
+        String type = this.getClass().getSimpleName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(id).append(",")
+                .append(type).append(",")
+                .append(escapeCsv(title)).append(",")
+                .append(status != null ? status : "").append(",")
+                .append(escapeCsv(description)).append(",")
+                .append(dur).append(",")
+                .append(st).append(",")
+                .append(et).append(",");
+        return sb.toString();
     }
 
-    public void setDescription(String updated) {
-        this.description = updated;
+    private String escapeCsv(String s) {
+        if (s == null) return "";
+        return s.replace("\n", " ").replace("\r", " ");
+    }
+
+    public static Task fromString(String line) {
+        String[] parts = line.split(",", -1);
+        String type = parts[1].trim().toUpperCase();
+        int id = Integer.parseInt(parts[0].trim());
+        String title = parts.length > 2 ? parts[2] : "";
+        Status status = parts.length > 3 && !parts[3].isEmpty() ? Status.parse(parts[3]) : Status.NEW;
+        String description = parts.length > 4 ? parts[4] : "";
+        Duration duration = null;
+        if (parts.length > 5 && !parts[5].isEmpty()) {
+            duration = Duration.ofMinutes(Long.parseLong(parts[5]));
+        }
+        LocalDateTime start = null;
+        if (parts.length > 6 && !parts[6].isEmpty()) {
+            start = LocalDateTime.parse(parts[6], FORMATTER);
+        }
+        LocalDateTime end = null;
+        if (parts.length > 7 && !parts[7].isEmpty()) {
+            end = LocalDateTime.parse(parts[7], FORMATTER);
+        }
+        switch (type) {
+            case "TASK":
+                Task task = new Task(id, title, description, status, duration, start);
+                task.setEndTime(end);
+                return task;
+            case "EPIC":
+                Epic epic = new Epic(id, title, description, status);
+                epic.setDuration(duration);
+                epic.setStartTime(start);
+                epic.setEndTime(end);
+                return epic;
+            case "SUBTASK":
+                int epicId = parts.length > 8 && !parts[8].isEmpty() ? Integer.parseInt(parts[8]) : -1;
+                Subtask subtask = new Subtask(id, title, description, status, epicId, duration, start);
+                subtask.setEndTime(end);
+                return subtask;
+            default:
+                throw new IllegalArgumentException("Unknown type: " + type);
+        }
     }
 }

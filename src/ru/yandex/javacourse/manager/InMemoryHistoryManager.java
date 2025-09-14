@@ -8,29 +8,65 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-
     private final Map<Integer, Node> nodeMap = new HashMap<>();
     private Node first;
     private Node last;
 
+    private void linkLast(Task task) {
+        Node node = new Node(task, last, null);
+        if (last == null) {
+            first = node;
+        } else {
+            last.next = node;
+            node.prev = last;
+        }
+        last = node;
+    }
+
+    private ArrayList<Task> getTasks() {
+        ArrayList<Task> temp = new ArrayList<>();
+        Node current = first;
+        while (current != null) {
+            temp.add(current.task);
+            current = current.next;
+        }
+        return temp;
+    }
+
+    private void removeNode(int id) {
+        final Node node = nodeMap.remove(id);
+        if (node == null) return;
+        if (node == first && node == last) {
+            first = null;
+            last = null;
+            return;
+        }
+        if (node == first) {
+            first = node.next;
+            if (first != null) first.prev = null;
+        } else if (node == last) {
+            last = node.prev;
+            if (last != null) last.next = null;
+        } else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+    }
+
     @Override
     public void add(Task task) {
         if (task == null) return;
-        final int id = task.getId();
-        if (nodeMap.containsKey(id)) removeNode(id);
+        int id = task.getId();
+        if (nodeMap.containsKey(id)) {
+            removeNode(id);
+        }
         linkLast(task);
         nodeMap.put(id, last);
     }
 
     @Override
     public List<Task> getHistory() {
-        List<Task> history = new ArrayList<>();
-        Node current = first;
-        while (current != null) {
-            history.add(current.task);
-            current = current.next;
-        }
-        return history;
+        return getTasks();
     }
 
     @Override
@@ -41,25 +77,5 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public Map<Integer, Node> getNodeMap() {
         return nodeMap;
-    }
-
-    private void linkLast(Task task) {
-        Node node = new Node(task, last, null);
-        if (last == null) first = node;
-        else last.next = node;
-        if (last != null) last.next = node;
-        node.prev = last;
-        last = node;
-    }
-
-    private void removeNode(int id) {
-        Node node = nodeMap.remove(id);
-        if (node == null) return;
-
-        if (node.prev != null) node.prev.next = node.next;
-        else first = node.next;
-
-        if (node.next != null) node.next.prev = node.prev;
-        else last = node.prev;
     }
 }

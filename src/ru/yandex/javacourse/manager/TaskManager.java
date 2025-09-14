@@ -3,7 +3,9 @@ package ru.yandex.javacourse.manager;
 import ru.yandex.javacourse.tasks.Epic;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
+import ru.yandex.javacourse.tasks.Status;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public interface TaskManager {
@@ -32,11 +34,11 @@ public interface TaskManager {
 
     void updateSubtask(Subtask subtask);
 
-    void updateTaskStatus(int id, String status);
+    void updateTaskStatus(int id, Status status);
+
+    void updateSubtaskStatus(int id, Status status);
 
     void updateEpicStatus(int id);
-
-    void updateSubtaskStatus(int id, String status);
 
     void deleteTask(Task task);
 
@@ -52,7 +54,7 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    boolean isIntersecting(Task t1, Task t2);
-
     List<Task> getPrioritizedTasks();
+
+    boolean isIntersecting(Task t1, Task t2);
 }

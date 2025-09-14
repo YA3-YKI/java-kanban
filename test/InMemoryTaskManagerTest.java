@@ -1,6 +1,6 @@
 import ru.yandex.javacourse.manager.InMemoryTaskManager;
 
-class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Override
     protected InMemoryTaskManager createManager() {
