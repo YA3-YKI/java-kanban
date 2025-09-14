@@ -1,7 +1,10 @@
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.javacourse.manager.TaskManager;
-import ru.yandex.javacourse.tasks.*;
+import ru.yandex.javacourse.tasks.Epic;
+import ru.yandex.javacourse.tasks.Status;
+import ru.yandex.javacourse.tasks.Subtask;
+import ru.yandex.javacourse.tasks.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

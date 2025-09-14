@@ -1,11 +1,10 @@
 package ru.yandex.javacourse.manager;
 
 import ru.yandex.javacourse.tasks.Epic;
+import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
-import ru.yandex.javacourse.tasks.Status;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public interface TaskManager {

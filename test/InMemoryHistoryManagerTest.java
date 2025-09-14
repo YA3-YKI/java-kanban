@@ -8,10 +8,8 @@ import ru.yandex.javacourse.tasks.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Тестирование истории задач")
 class InMemoryHistoryManagerTest {
@@ -51,7 +49,6 @@ class InMemoryHistoryManagerTest {
         // Then
         assertEquals("Updated", manager.getHistory().get(0).getDescription());
     }
-
 
 
     @Test
