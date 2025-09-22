@@ -5,13 +5,21 @@ import ru.yandex.javacourse.tasks.Status;
 import ru.yandex.javacourse.tasks.Subtask;
 import ru.yandex.javacourse.tasks.Task;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public interface TaskManager {
 
     void addTask(Task task);
+
+    void addEpic(Epic epic);
+
+    void createSubtask(Subtask subtask);
+
+    Task getTaskById(int id);
+
+    Epic getEpicById(int id);
+
+    Subtask getSubtaskById(int id);
 
     List<Task> getAllTasks();
 
@@ -19,39 +27,33 @@ public interface TaskManager {
 
     List<Subtask> getAllSubtasks();
 
-    void deleteAllTasks();
-
-    void deleteAllSubtasks();
-
-    void deleteAllEpics();
-
-    Task getTaskById(Integer id);
-
-    void createTask(Task newTask);
-
-    void createSubtask(Subtask newSubtask);
-
-    void createEpic(Epic newEpic);
-
     void updateTask(Task task);
-
-    void updateSubtask(Subtask subtask);
 
     void updateEpic(Epic epic);
 
-    void deleteTask(Task task);
+    void updateSubtask(Subtask subtask);
 
-    void deleteSubtask(Subtask subtask);
+    void updateTaskStatus(int id, Status status);
+
+    void updateSubtaskStatus(int id, Status status);
+
+    void updateEpicStatus(int id);
+
+    void deleteTask(Task task);
 
     void deleteEpic(Epic epic);
 
-    void updateTaskStatus(Integer id, Status status);
+    void deleteSubtask(Subtask subtask);
 
-    void updateSubtaskStatus(Integer id, Status status);
+    void deleteAllTasks();
 
-    void updateEpicStatus(Integer id);
+    void deleteAllEpics();
 
-    ArrayList<Task> getHistory();
+    void deleteAllSubtasks();
 
-    Map<Integer, Node> getNode();
+    List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
+
+    boolean isIntersecting(Task t1, Task t2);
 }
