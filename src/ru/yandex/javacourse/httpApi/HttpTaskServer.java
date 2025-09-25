@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.javacourse.httpApi.handlers.*;
-import ru.yandex.javacourse.manager.HistoryManager;
 import ru.yandex.javacourse.manager.Managers;
 import ru.yandex.javacourse.manager.TaskManager;
 
@@ -40,22 +39,21 @@ public class HttpTaskServer {
         server.stop(0);
         System.out.println("HTTP-сервер остановлен");
     }
-}
 
+    class Main {
+        private static final int PORT = 8080;
 
- class Main {
-    private static final int PORT = 8080;
+        public static void main(String[] args) {
+            TaskManager taskManager = Managers.getDefault();
 
-    public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
-
-        try {
-            HttpTaskServer httpServer = new HttpTaskServer(taskManager);
-            httpServer.start();
-            System.out.println("HTTP сервер запущен на порту " + PORT);
-        } catch (Exception e) {
-            System.out.println("Ошибка запуска сервера: " + e.getMessage());
-            e.printStackTrace();
+            try {
+                HttpTaskServer httpServer = new HttpTaskServer(taskManager);
+                httpServer.start();
+                System.out.println("HTTP сервер запущен на порту " + PORT);
+            } catch (Exception e) {
+                System.out.println("Ошибка запуска сервера: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }
