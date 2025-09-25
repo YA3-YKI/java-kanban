@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.javacourse.httpApi.DurationAdapter;
 import ru.yandex.javacourse.httpApi.HttpTaskServer;
 import ru.yandex.javacourse.httpApi.LocalDateTimeAdapter;
-import ru.yandex.javacourse.manager.HistoryManager;
-import ru.yandex.javacourse.manager.InMemoryHistoryManager;
 import ru.yandex.javacourse.manager.InMemoryTaskManager;
 import ru.yandex.javacourse.manager.TaskManager;
 import ru.yandex.javacourse.tasks.Epic;
@@ -31,15 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class HttpTaskManagerTasksTest {
 
     private TaskManager manager;
-    private HistoryManager historyManager;
     private HttpTaskServer taskServer;
     private Gson gson;
 
     @BeforeEach
     public void setUp() throws IOException {
         manager = new InMemoryTaskManager();
-        historyManager = new InMemoryHistoryManager();
-        taskServer = new HttpTaskServer(manager, historyManager);
+        taskServer = new HttpTaskServer(manager);
         taskServer.start();
 
         gson = new GsonBuilder()
@@ -315,8 +311,8 @@ public class HttpTaskManagerTasksTest {
         Epic epic2 = new Epic(0, "Эпик 2", "Описание эпика 2", Status.NEW);
         manager.addEpic(epic1);
         manager.addEpic(epic2);
-        historyManager.add(epic1);
-        historyManager.add(epic2);
+        manager.getEpicById(epic1.getId());
+        manager.getEpicById(epic2.getId());
 
         // when: GET-запрос на сервер для получения истории
         HttpClient client = HttpClient.newHttpClient();
@@ -365,5 +361,55 @@ public class HttpTaskManagerTasksTest {
         assertEquals(2, tasksArray.length, "Некорректное количество задач");
         assertEquals("Задача 1", tasksArray[0].getTitle(), "Некорректное имя первой задачи");
         assertEquals("Задача 2", tasksArray[1].getTitle(), "Некорректное имя второй задачи");
+    }
+
+    @Test
+    @DisplayName("POST /tasks → ошибка 406 при пересечении по времени")
+    public void testAddTaskWithIntersection() throws IOException, InterruptedException {
+        // given: первая задача в диапазоне 10:00–11:00
+        Task task1 = new Task(0, "Задача 1", "Описание Задачи 1", Status.NEW,
+                Duration.ofMinutes(60), LocalDateTime.of(2025, 1, 1, 10, 0));
+        manager.addTask(task1);
+
+        // when: пытаемся добавить вторую задачу, пересекающуюся по времени
+        Task task2 = new Task(0, "Задача 2", "Описание Задачи 2", Status.NEW,
+                Duration.ofMinutes(60), LocalDateTime.of(2025, 1, 1, 10, 30));
+        String taskJson = gson.toJson(task2);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // then: сервер вернёт 406 и задачу не добавит
+        assertEquals(406, response.statusCode(), "Ожидался код 406 при пересечении задач");
+        assertEquals(1, manager.getAllTasks().size(), "Задача не должна добавиться");
+    }
+
+    @Test
+    @DisplayName("DELETE /tasks/{id} → ошибка 404 при удалении несуществующей задачи")
+    public void testDeleteNonExistentTask() throws IOException, InterruptedException {
+        // given: в менеджере нет задач
+        int Id = 999;
+
+        // when: отправляем DELETE-запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/" + Id);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // then: сервер вернёт 404 и сообщение об ошибке
+        assertEquals(404, response.statusCode(), "Удаление несуществующей задачи должно вернуть 404");
+        assertEquals("Задача не найдена", response.body(), "Неверное сообщение об ошибке");
     }
 }

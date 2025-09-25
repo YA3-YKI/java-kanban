@@ -223,7 +223,8 @@ public class InMemoryTaskManager implements TaskManager {
         return t1.getStartTime().isBefore(t2.getEndTime()) && t2.getStartTime().isBefore(t1.getEndTime());
     }
 
-    protected boolean intersectsWithAny(Task task) {
+    @Override
+    public boolean intersectsWithAny(Task task) {
         return prioritizedTasks.stream()
                 .anyMatch(t -> t.getId() != task.getId() && isIntersecting(t, task));
     }

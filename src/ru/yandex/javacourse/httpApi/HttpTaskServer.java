@@ -1,63 +1,61 @@
 package ru.yandex.javacourse.httpApi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
+import ru.yandex.javacourse.httpApi.handlers.*;
 import ru.yandex.javacourse.manager.HistoryManager;
 import ru.yandex.javacourse.manager.Managers;
 import ru.yandex.javacourse.manager.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class HttpTaskServer {
-    private static final int PORT = 8080;
-    private final HttpServer httpServer;
-    private final TaskManager taskManager;
-    private final HistoryManager historyManager;
+    private final HttpServer server;
 
-    public HttpTaskServer(TaskManager taskManager, HistoryManager historyManager) throws IOException {
-        this.taskManager = taskManager;
-        this.historyManager = historyManager;
+    public HttpTaskServer(TaskManager manager) throws IOException {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
 
-        httpServer = HttpServer.create();
-        httpServer.bind(new InetSocketAddress(PORT), 0);
+        server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        // регистрируем все контексты
-        httpServer.createContext("/tasks", new BaseHttpHandler(taskManager, historyManager));
-        httpServer.createContext("/subtasks", new BaseHttpHandler(taskManager, historyManager));
-        httpServer.createContext("/epics", new BaseHttpHandler(taskManager, historyManager));
-        httpServer.createContext("/history", new BaseHttpHandler(taskManager, historyManager));
-        httpServer.createContext("/prioritized", new BaseHttpHandler(taskManager, historyManager));
+        server.createContext("/tasks", new TaskHandler(manager, gson));
+        server.createContext("/epics", new EpicHandler(manager, gson));
+        server.createContext("/subtasks", new SubtaskHandler(manager, gson));
+        server.createContext("/history", new HistoryHandler(manager, gson));
+        server.createContext("/prioritized", new PrioritizedHandler(manager, gson));
     }
 
     public void start() {
-        httpServer.start();
-        System.out.println("HTTP сервер запущен на порту " + PORT);
+        server.start();
+        System.out.println("HTTP-сервер запущен на порту 8080");
     }
 
     public void stop() {
-        httpServer.stop(0);
-        System.out.println("HTTP сервер остановлен");
+        server.stop(0);
+        System.out.println("HTTP-сервер остановлен");
     }
+}
 
+
+ class Main {
+    private static final int PORT = 8080;
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
 
         try {
-            HttpServer httpServer = HttpServer.create();
-            httpServer.bind(new InetSocketAddress(PORT), 0);
-            httpServer.createContext("/tasks", new BaseHttpHandler(taskManager, historyManager));
-            httpServer.createContext("/subtasks", new BaseHttpHandler(taskManager, historyManager));
-            httpServer.createContext("/epics", new BaseHttpHandler(taskManager, historyManager));
-            httpServer.createContext("/history", new BaseHttpHandler(taskManager, historyManager));
-            httpServer.createContext("/prioritized", new BaseHttpHandler(taskManager, historyManager));
+            HttpTaskServer httpServer = new HttpTaskServer(taskManager);
             httpServer.start();
-
             System.out.println("HTTP сервер запущен на порту " + PORT);
-
-        } catch (IOException e) {
-            System.out.println("Ошибка 1");
+        } catch (Exception e) {
+            System.out.println("Ошибка запуска сервера: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

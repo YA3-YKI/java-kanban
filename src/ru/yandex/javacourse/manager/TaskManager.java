@@ -58,4 +58,6 @@ public interface TaskManager {
     boolean isIntersecting(Task t1, Task t2);
 
     List<Subtask> getEpicSubtasks(int id);
+
+    boolean intersectsWithAny(Task task);
 }
